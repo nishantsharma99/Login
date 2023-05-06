@@ -236,7 +236,7 @@ function MyAllMap() {
                     </Box>
                 )
             }
-
+            {/* <Box sx={{width:'100vh', position:'relative', padding: '0', margin: '0'}}> */}
             <GoogleMap
                 mapContainerStyle={containerStyle}
                 center={center}
@@ -315,6 +315,7 @@ function MyAllMap() {
    
     
             </GoogleMap> 
+            {/* </Box> */}
             </>
     )
 }

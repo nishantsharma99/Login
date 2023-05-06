@@ -91,7 +91,7 @@ const HomeView = () => {
     };
     const openAllMaps = () => {
 
-        window.open("http://localhost:3000/allMap", "_blank")
+        window.open("https://login-azv2.onrender.com/allMap", "_blank")
     };
 
     const getData = async () => {

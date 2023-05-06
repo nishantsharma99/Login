@@ -63,20 +63,19 @@ const HomeView = () => {
     const [apiListData, setApiListData] = useState(null);
     const [progressBar, setProgressBar] = useState(false);
 
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
     // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows =
-        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - 50) : 0;
 
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
+    const [pg, setpg] = React.useState(0);
+    const [rpg, setrpg] = React.useState(10);
 
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
+    function handleChangePage(event, newpage) {
+        setpg(newpage);
+    }
+
+    function handleChangeRowsPerPage(event) {
+        setrpg(parseInt(event.target.value, 10));
+        setpg(0);
+    }
     const handleClickOpenDriverDetails = (data) => {
         setApiListData([data]);
         setOpenDriverDetails(true);
@@ -102,7 +101,7 @@ const HomeView = () => {
                 setData(res.data);
                 setProgressBar(false);
                 setApiListData([res.data]);
-                
+
 
             });
         } catch (err) {
@@ -110,8 +109,10 @@ const HomeView = () => {
         }
     };
 
-   
+
     useEffect(() => {
+        
+    document.title = "Home";
         getData();
 
     }, []);
@@ -131,7 +132,7 @@ const HomeView = () => {
         )}
 
         <Box sx={{ width: "100%" }}>
-            <TableContainer component={Paper} sx={{ height: "100vh" }}>
+            <TableContainer component={Paper} >
                 <Table sx={{ minWidth: 700 }}
                     aria-label="customized table"
                     stickyHeader>
@@ -146,48 +147,57 @@ const HomeView = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {data?.list.map((item) => (
-                                <StyledTableRow key={Math.random().toString()}>
-                                    <StyledTableCell align="center" component="th" scope="row"><strong>{Math.random().toString()}</strong></StyledTableCell>
-                                    <StyledTableCell align="center"><strong>{item.vId}</strong></StyledTableCell>
-                                    <StyledTableCell align="center"><strong>{item.vehReg}</strong></StyledTableCell>
-                                    <StyledTableCell align="center">
-                                        <Button variant="contained"
-                                            onClick={() => handleClickOpenDriverDetails(item)}
-                                            sx={{
-                                                textTransform: "none",
-                                                backgroundColor: "#2e7d32",
-                                                "&:hover": {
-                                                    backgroundColor: "#4caf50",
-                                                },
-                                            }}>
-                                            <strong>Show Details</strong>
-                                        </Button>
-                                    </StyledTableCell>
-                                    <StyledTableCell align="center"><strong>{item.disInKM === "" ? "0 km" : item.disInKM + " km"}</strong></StyledTableCell>
-                                    <StyledTableCell align="center">
-                                        <Button variant="contained"
-                                            onClick={() => handleClickOpenVehicleDetails(item)}
-                                            sx={{
-                                                textTransform: "none",
-                                                backgroundColor: "#2e7d32",
-                                                "&:hover": {
-                                                    backgroundColor: "#4caf50",
-                                                }
-                                            }}>
-                                            <strong>Show Details</strong>
-                                        </Button>
-                                    </StyledTableCell>
-                                </StyledTableRow>
-                            ))}
-                        
+                        {data?.list.slice(pg * rpg, pg * rpg + rpg).map((item, index) => (
+                            <StyledTableRow key={Math.random().toString()}>
+                                <StyledTableCell align="center" component="th" scope="row"><strong>{index + 1}</strong></StyledTableCell>
+                                <StyledTableCell align="center"><strong>{item.vId}</strong></StyledTableCell>
+                                <StyledTableCell align="center"><strong>{item.vehReg}</strong></StyledTableCell>
+                                <StyledTableCell align="center">
+                                    <Button variant="contained"
+                                        onClick={() => handleClickOpenDriverDetails(item)}
+                                        sx={{
+                                            textTransform: "none",
+                                            backgroundColor: "#2e7d32",
+                                            "&:hover": {
+                                                backgroundColor: "#4caf50",
+                                            },
+                                        }}>
+                                        <strong>Show Details</strong>
+                                    </Button>
+                                </StyledTableCell>
+                                <StyledTableCell align="center"><strong>{item.disInKM === "" ? "0 km" : item.disInKM + " km"}</strong></StyledTableCell>
+                                <StyledTableCell align="center">
+                                    <Button variant="contained"
+                                        onClick={() => handleClickOpenVehicleDetails(item)}
+                                        sx={{
+                                            textTransform: "none",
+                                            backgroundColor: "#2e7d32",
+                                            "&:hover": {
+                                                backgroundColor: "#4caf50",
+                                            }
+                                        }}>
+                                        <strong>Show Details</strong>
+                                    </Button>
+                                </StyledTableCell>
+                            </StyledTableRow>
+                        ))}
+
                     </TableBody>
                 </Table>
             </TableContainer>
-
+            <TablePagination
+            sx={{ backgroundColor: "#d45050", color: "#fff" }}
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={data?.list.length}
+                rowsPerPage={rpg}
+                page={pg}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+            />
             <Dialog open={openDriverDetails} onClose={handleClose}>
                 <DialogContent sx={{ minWidth: "400px" }}>
-                    {data?.list.map((item) => (
+                    {apiListData?.map((item) => (
                         <Box>
 
                             <Typography>Driver Name : {item?.drivers?.driverName}</Typography>

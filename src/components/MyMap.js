@@ -7,6 +7,7 @@ export default function MyMap(props) {
   const [a, setA] = useState(false);
   const color = `hsl(${hue % 360}deg 39% 70%)`;
   const [anchor, setAnchor] = useState([props.data.gpsDtl.latLngDtl.lat, props.data.gpsDtl.latLngDtl.lng]);
+  
 
   const card = (
     <React.Fragment>

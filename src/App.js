@@ -1,3 +1,4 @@
+import DocumentTitle from './components/DocumentTitle';
 import HomeView from './components/HomeView';
 import LoginView from './components/LoginView';
 import MyAllMap from './components/MyAllMap';

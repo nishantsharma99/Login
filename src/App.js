@@ -1,5 +1,7 @@
 import HomeView from './components/HomeView';
 import LoginView from './components/LoginView';
+import MyAllMap from './components/MyAllMap';
+
 import {
   BrowserRouter,
   Routes,
@@ -15,6 +17,7 @@ function App() {
         <Routes>
           <Route path="/" element={<LoginView />} />
           <Route path="/home" element={<HomeView />} />
+          <Route path="/allMap" element={<MyAllMap />} />
         </Routes>
         </BrowserRouter>
   

@@ -13,11 +13,12 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import userImage from './user.png';
-
+import { useNavigate } from 'react-router-dom';
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function Navbar() {
+    const navigate = useNavigate()
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -36,8 +37,12 @@ function Navbar() {
         setAnchorElUser(null);
     };
 
+    const logout = () => {
+        navigate('/')
+    }
+
     return (
-        <AppBar position="static">
+        <AppBar position="static" sx={{backgroundColor: '#d45050'}}>
             <Container maxWidth="xl">
                 <Toolbar disableGutters>
                     <Typography
@@ -131,7 +136,7 @@ function Navbar() {
                         >
                             {settings.map((setting) => (
                                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                                    <Typography textAlign="center">{setting}</Typography>
+                                    <Typography textAlign="center" onClick={logout}>{setting}</Typography>
                                 </MenuItem>
                             ))}
                         </Menu>

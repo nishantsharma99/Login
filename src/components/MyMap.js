@@ -10,7 +10,7 @@ export default function MyMap(props) {
 
   const card = (
     <React.Fragment>
-      <CardContent sx={{ pr: 5 }}>
+      <CardContent sx={{ pr: 2 }}>
         <Typography sx={{ fontSize: 18 }} color="text.secondary" gutterBottom>
           Vehicle Information
         </Typography>
@@ -45,33 +45,42 @@ export default function MyMap(props) {
 
   console.log("mapData", props.data);
   return (
-    <Map height={500} defaultCenter={[props.data.gpsDtl.latLngDtl.lat, props.data.gpsDtl.latLngDtl.lng]} defaultZoom={15}>
-      <Marker
-        width={50}
-        anchor={[props.data.gpsDtl.latLngDtl.lat, props.data.gpsDtl.latLngDtl.lng]}
-        color={color}
-        onClick={() => {
-          setA(!a);
-          setHue(hue + 20);
-        }}
-      />
+    <Box>
+      <Map height={500} defaultCenter={[props.data.gpsDtl.latLngDtl.lat, props.data.gpsDtl.latLngDtl.lng]} defaultZoom={10}>
+        <Marker
+          width={50}
+          anchor={[props.data.gpsDtl.latLngDtl.lat, props.data.gpsDtl.latLngDtl.lng]}
+          color={color}
+          onClick={() => {
+            setA(!a);
+            setHue(a?hue - 100:hue + 100);
+          }}
+        />
 
-      {!a ? (
-        <></>
-      ) : (
-        <Overlay anchor={[props.data.gpsDtl.latLngDtl.lat, props.data.gpsDtl.latLngDtl.lng]} offset={[200, 250]}>
-          <Box sx={{ maxWidth: 275 }}>
-            <Card variant="outlined">{card}</Card>
-          </Box>
-          {/* <Draggable
+        {!a ? (
+          <></>
+        ) : (
+          <Overlay anchor={[props.data.gpsDtl.latLngDtl.lat, props.data.gpsDtl.latLngDtl.lng]} offset={[150, 250]}>
+            <Box sx={{ maxWidth: 300}}>
+              {/*           
+          <Draggable
             offset={[60, 87]}
             anchor={anchor}
-            onDragEnd={setAnchor}></Draggable> */}
-        </Overlay>
-      )}
+            onDragEnd={setAnchor}> */}
+
+              <Card variant="outlined">{card}</Card>
 
 
-    </Map>
-    
+              {/* </Draggable> */}
+            </Box></Overlay>
+
+        )}
+
+
+      </Map>
+
+    </Box>
+
+
   );
 }

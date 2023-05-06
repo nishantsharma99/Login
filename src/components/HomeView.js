@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from "axios";
 import { Box, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Table from "@mui/material/Table";
@@ -8,6 +9,17 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import TableFooter from '@mui/material/TableFooter';
+import TablePagination from '@mui/material/TablePagination';
+import IconButton from '@mui/material/IconButton';
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import LastPageIcon from '@mui/icons-material/LastPage';
+
+import { useTheme } from '@mui/material/styles';
+
+
 import {
     Button,
     Dialog,
@@ -19,18 +31,11 @@ import {
 import Navbar from './Navbar';
 import MyMap from './MyMap';
 
+
+
+
 const HomeView = () => {
-
     const url = "http://gtrac.in:8080/trackingdashboard/getListVehicles?token=53096";
-
-    const fetchData = () => {
-        return fetch(url)
-            .then((response) => response.json())
-            .then((data) => {
-                setData(data);
-            })
-            .then(() => setProgressBar(false));
-    };
 
     const StyledTableCell = styled(TableCell)(({ theme }) => ({
         [`&.${tableCellClasses.head}`]: {
@@ -44,7 +49,7 @@ const HomeView = () => {
 
     const StyledTableRow = styled(TableRow)(({ theme }) => ({
         "&:nth-of-type(odd)": {
-            backgroundColor: theme.palette.info.light,
+            backgroundColor: '#cffafa',
         },
         // hide last border
         "&:last-child td, &:last-child th": {
@@ -58,11 +63,26 @@ const HomeView = () => {
     const [apiListData, setApiListData] = useState(null);
     const [progressBar, setProgressBar] = useState(false);
 
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    // Avoid a layout jump when reaching the last page with empty rows.
+    const emptyRows =
+        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - 50) : 0;
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
     const handleClickOpenDriverDetails = (data) => {
         setApiListData([data]);
         setOpenDriverDetails(true);
     };
-    const handleClickOpenVehicleDetails = () => {
+    const handleClickOpenVehicleDetails = (data) => {
+        setApiListData([data]);
         setOpenVehicleDetails(true);
     };
 
@@ -70,12 +90,33 @@ const HomeView = () => {
         setOpenDriverDetails(false);
         setOpenVehicleDetails(false);
     };
+    const openAllMaps = () => {
 
+        window.open("http://localhost:3000/allMap", "_blank")
+    };
+
+    const getData = async () => {
+        try {
+            setProgressBar(true);
+            await axios.get(url).then((res) => {
+                setData(res.data);
+                setProgressBar(false);
+                setApiListData([res.data]);
+                
+
+            });
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+   
     useEffect(() => {
-        setProgressBar(true);
-        fetchData();
+        getData();
+
     }, []);
 
+    console.log(data);
     return (<>
         <Navbar />
         {progressBar && (
@@ -105,51 +146,52 @@ const HomeView = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {data?.list.map((item, index) => (
-                            <StyledTableRow key={index}>
-                                <StyledTableCell align="center" component="th" scope="row"><strong>{index + 1}</strong></StyledTableCell>
-                                <StyledTableCell align="center"><strong>{item.vId}</strong></StyledTableCell>
-                                <StyledTableCell align="center"><strong>{item.vehReg}</strong></StyledTableCell>
-                                <StyledTableCell align="center">
-                                    <Button variant="contained"
-                                        onClick={() => handleClickOpenDriverDetails(item)}
-                                        sx={{
-                                            textTransform: "none",
-                                            backgroundColor: "#2e7d32",
-                                            "&:hover": {
-                                                backgroundColor: "#4caf50",
-                                            },
-                                        }}>
-                                        <strong>Show Details</strong>
-                                    </Button>
-                                </StyledTableCell>
-                                <StyledTableCell align="center"><strong>{item.disInKM === "" ? "0 km" : item.disInKM + " km"}</strong></StyledTableCell>
-                                <StyledTableCell align="center">
-                                    <Button variant="contained"
-                                        onClick={() => handleClickOpenVehicleDetails(item.vehicleTrip)}
-                                        sx={{
-                                            textTransform: "none",
-                                            backgroundColor: "#2e7d32",
-                                            "&:hover": {
-                                                backgroundColor: "#4caf50",
-                                            }
-                                        }}>
-                                        <strong>Show Details</strong>
-                                    </Button>
-                                </StyledTableCell>
-                            </StyledTableRow>
-                        ))}
+                        {data?.list.map((item) => (
+                                <StyledTableRow key={Math.random().toString()}>
+                                    <StyledTableCell align="center" component="th" scope="row"><strong>{Math.random().toString()}</strong></StyledTableCell>
+                                    <StyledTableCell align="center"><strong>{item.vId}</strong></StyledTableCell>
+                                    <StyledTableCell align="center"><strong>{item.vehReg}</strong></StyledTableCell>
+                                    <StyledTableCell align="center">
+                                        <Button variant="contained"
+                                            onClick={() => handleClickOpenDriverDetails(item)}
+                                            sx={{
+                                                textTransform: "none",
+                                                backgroundColor: "#2e7d32",
+                                                "&:hover": {
+                                                    backgroundColor: "#4caf50",
+                                                },
+                                            }}>
+                                            <strong>Show Details</strong>
+                                        </Button>
+                                    </StyledTableCell>
+                                    <StyledTableCell align="center"><strong>{item.disInKM === "" ? "0 km" : item.disInKM + " km"}</strong></StyledTableCell>
+                                    <StyledTableCell align="center">
+                                        <Button variant="contained"
+                                            onClick={() => handleClickOpenVehicleDetails(item)}
+                                            sx={{
+                                                textTransform: "none",
+                                                backgroundColor: "#2e7d32",
+                                                "&:hover": {
+                                                    backgroundColor: "#4caf50",
+                                                }
+                                            }}>
+                                            <strong>Show Details</strong>
+                                        </Button>
+                                    </StyledTableCell>
+                                </StyledTableRow>
+                            ))}
+                        
                     </TableBody>
                 </Table>
             </TableContainer>
 
             <Dialog open={openDriverDetails} onClose={handleClose}>
                 <DialogContent sx={{ minWidth: "400px" }}>
-                    {apiListData?.map((item) => (
+                    {data?.list.map((item) => (
                         <Box>
 
-                            <Typography>Driver Name : {item.drivers.driverName}</Typography>
-                            <Typography mt={2}>Driver Contact No. : {item.drivers.phoneNumber}</Typography>
+                            <Typography>Driver Name : {item?.drivers?.driverName}</Typography>
+                            <Typography mt={2}>Driver Contact No. : {item?.drivers?.phoneNumber}</Typography>
                         </Box>
                     ))}
                 </DialogContent>
@@ -162,16 +204,18 @@ const HomeView = () => {
             <Dialog open={openVehicleDetails} onClose={handleClose}>
                 <DialogContent sx={{ minWidth: '600px' }}>
                     {apiListData?.map((item) => (
+
                         <Box>
-                            <MyMap data={item}
-                                status={item.mode}
-                                speed={item.speed} />
-                                
+                            <MyMap data={item} />
                         </Box>
                     ))}
 
                 </DialogContent>
                 <DialogActions>
+
+                    <Button onClick={openAllMaps} variant="contained" color="success" size="small">
+                        SHOW ALL
+                    </Button>
                     <Button onClick={handleClose} variant="contained" color="error" size="small">
                         CLOSE
                     </Button>
